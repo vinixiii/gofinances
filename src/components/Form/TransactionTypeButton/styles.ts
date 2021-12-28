@@ -11,8 +11,10 @@ interface ContainerProps {
   isActive: boolean;
 }
 
-export const Container = styled.TouchableOpacity<ContainerProps>`
-  width: ${RFPercentage(25)}px;
+export const Container = styled.TouchableOpacity.attrs({
+  activeOpacity: 0.7,
+})<ContainerProps>`
+  width: 48%;
   flex-direction: row;
   align-items: center;
   justify-content: center;
