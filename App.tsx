@@ -10,7 +10,7 @@ import {
 
 import theme from './src/global/styles/theme';
 
-import { Register } from './src/screens/Register';
+import { Categories } from './src/screens/Categories';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -25,7 +25,7 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Register />
+      <Categories />
     </ThemeProvider>
   )
 }
