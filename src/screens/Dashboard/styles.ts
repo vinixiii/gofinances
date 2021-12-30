@@ -6,6 +6,7 @@ import { getBottomSpace, getStatusBarHeight } from 'react-native-iphone-x-helper
 import { Feather } from '@expo/vector-icons';
 
 import { DataListProps } from './index';
+import theme from '../../global/styles/theme';
 
 export const Container = styled(GestureHandlerRootView)`
   flex: 1;
@@ -97,5 +98,15 @@ export const TransactionsList = styled(
   contentContainerStyle: {
     paddingBottom: getBottomSpace(),
   }
+})``;
+
+export const LoadingContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+`;
+
+export const Loading = styled.ActivityIndicator.attrs({
+  size: 'large',
+  color: theme.colors.primary,
 })``;
 
