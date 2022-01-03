@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { VictoryPie } from 'victory-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTheme } from 'styled-components';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useFocusEffect } from '@react-navigation/native';
 import { addMonths, subMonths, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -44,7 +45,7 @@ interface CategoryDataProps {
 export function Resume() {
   const theme = useTheme();
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date);
   const [totalByCategories, setTotalByCategories] = useState<CategoryDataProps[]>([]);
 
@@ -53,16 +54,16 @@ export function Resume() {
 
     if(action === 'next') {
       const newDate = addMonths(selectedDate, 1);
-      setSelectedDate(newDate);
-      console.log(newDate);
+      setSelectedDate(newDate);      
     } else {
       const newDate = subMonths(selectedDate, 1);
       setSelectedDate(newDate);
-      console.log(newDate);
     }
   }
 
   async function loadData() {
+    setIsLoading(true);
+
     const dataKey = '@gofinances:transactions';
 
     const response = await AsyncStorage.getItem(dataKey);
@@ -75,15 +76,11 @@ export function Resume() {
       new Date(expense.date).getMonth() === selectedDate.getMonth() &&
       new Date(expense.date).getFullYear() === selectedDate.getFullYear()
     );
-
-    console.log(expenses);
     
     const expensesTotal = expenses
     .reduce((accumulator: number, expense: TransactionProps) => {
       return accumulator + Number(expense.amount);
     }, 0);
-
-    console.log(expensesTotal);
 
     const totalByCategory : CategoryDataProps[] = [];
 
@@ -119,9 +116,9 @@ export function Resume() {
     setIsLoading(false);
   }
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     loadData();
-  }, [selectedDate]);
+  }, [selectedDate]));
 
   return (
     <Container>
@@ -132,8 +129,7 @@ export function Resume() {
       {
         isLoading
         ? <LoadingContainer><Loading /></LoadingContainer>
-        : 
-        
+        :
         <Content
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
