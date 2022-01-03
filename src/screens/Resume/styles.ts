@@ -1,7 +1,9 @@
 import styled from 'styled-components/native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { GestureHandlerRootView, BorderlessButton } from 'react-native-gesture-handler';
-import { Feather } from '@expo/vector-icons'
+import { Feather } from '@expo/vector-icons';
+
+import theme from '../../global/styles/theme';
 
 export const Container = styled(GestureHandlerRootView)`
   flex: 1;
@@ -49,3 +51,13 @@ export const Month = styled.Text`
   font-size: ${RFValue(20)}px;
   color: ${({ theme }) => theme.colors.title};
 `;
+
+export const LoadingContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+`;
+
+export const Loading = styled.ActivityIndicator.attrs({
+  size: 'large',
+  color: theme.colors.primary,
+})``;

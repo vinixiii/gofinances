@@ -19,7 +19,9 @@ import {
   MonthSelect,
   MonthSelectButton,
   MonthSelectIcon,
-  Month
+  Month,
+  LoadingContainer,
+  Loading
 } from './styles';
 
 interface TransactionProps {
@@ -42,10 +44,13 @@ interface CategoryDataProps {
 export function Resume() {
   const theme = useTheme();
 
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date);
   const [totalByCategories, setTotalByCategories] = useState<CategoryDataProps[]>([]);
 
   function handleDateChange(action: 'next' | 'prev') {
+    setIsLoading(true);
+
     if(action === 'next') {
       const newDate = addMonths(selectedDate, 1);
       setSelectedDate(newDate);
@@ -111,6 +116,7 @@ export function Resume() {
     });
 
     setTotalByCategories(totalByCategory);
+    setIsLoading(false);
   }
 
   useEffect(() => {
@@ -123,51 +129,57 @@ export function Resume() {
         <Title>Resumo</Title>
       </Header>
 
-      <Content
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingHorizontal: 24,
-          paddingBottom: useBottomTabBarHeight() - 40,
-        }}
-      >
-        <MonthSelect>
-          <MonthSelectButton onPress={() => handleDateChange('prev')}>
-            <MonthSelectIcon name="chevron-left" />
-          </MonthSelectButton>
+      {
+        isLoading
+        ? <LoadingContainer><Loading /></LoadingContainer>
+        : 
+        
+        <Content
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingHorizontal: 24,
+            paddingBottom: useBottomTabBarHeight() - 40,
+          }}
+        >
+          <MonthSelect>
+            <MonthSelectButton onPress={() => handleDateChange('prev')}>
+              <MonthSelectIcon name="chevron-left" />
+            </MonthSelectButton>
 
-          <Month>{ format(selectedDate, 'MMMM, yyyy', { locale: ptBR }) }</Month>
+            <Month>{ format(selectedDate, 'MMMM, yyyy', { locale: ptBR }) }</Month>
 
-          <MonthSelectButton onPress={() => handleDateChange('next')}>
-            <MonthSelectIcon name="chevron-right" />
-          </MonthSelectButton>
-        </MonthSelect>
+            <MonthSelectButton onPress={() => handleDateChange('next')}>
+              <MonthSelectIcon name="chevron-right" />
+            </MonthSelectButton>
+          </MonthSelect>
 
-        <ChartContainer>
-          <VictoryPie
-            data={totalByCategories}
-            colorScale={totalByCategories.map(category => category.color)}
-            style={{
-              labels: {
-                fontSize: RFValue(18),
-                fontWeight: 'bold',
-                fill: theme.colors.shape,
-              }
-            }}
-            labelRadius={100}
-          />
-        </ChartContainer>
-
-        {
-          totalByCategories.map(item => (
-            <HistoryCard
-              key={item.key}
-              title={item.name}
-              amount={item.totalFormatted}
-              color={item.color}
+          <ChartContainer>
+            <VictoryPie
+              data={totalByCategories}
+              colorScale={totalByCategories.map(category => category.color)}
+              style={{
+                labels: {
+                  fontSize: RFValue(18),
+                  fontWeight: 'bold',
+                  fill: theme.colors.shape,
+                }
+              }}
+              labelRadius={100}
             />
-          ))
-        }
-      </Content>
+          </ChartContainer>
+
+          {
+            totalByCategories.map(item => (
+              <HistoryCard
+                key={item.key}
+                title={item.name}
+                amount={item.totalFormatted}
+                color={item.color}
+              />
+            ))
+          }
+        </Content>
+      }
     </Container>
   )
 }
