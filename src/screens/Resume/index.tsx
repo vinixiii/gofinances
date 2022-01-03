@@ -3,7 +3,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { VictoryPie } from 'victory-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTheme } from 'styled-components';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs'
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { addMonths, subMonths, format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 import { categories } from '../../utils/categories';
 import { HistoryCard } from '../../components/HistoryCard';
@@ -13,7 +15,11 @@ import {
   Header,
   Title,
   Content,
-  ChartContainer
+  ChartContainer,
+  MonthSelect,
+  MonthSelectButton,
+  MonthSelectIcon,
+  Month
 } from './styles';
 
 interface TransactionProps {
@@ -36,9 +42,22 @@ interface CategoryDataProps {
 export function Resume() {
   const theme = useTheme();
 
+  const [selectedDate, setSelectedDate] = useState(new Date);
   const [totalByCategories, setTotalByCategories] = useState<CategoryDataProps[]>([]);
 
-  async function loadTransactions() {
+  function handleDateChange(action: 'next' | 'prev') {
+    if(action === 'next') {
+      const newDate = addMonths(selectedDate, 1);
+      setSelectedDate(newDate);
+      console.log(newDate);
+    } else {
+      const newDate = subMonths(selectedDate, 1);
+      setSelectedDate(newDate);
+      console.log(newDate);
+    }
+  }
+
+  async function loadData() {
     const dataKey = '@gofinances:transactions';
 
     const response = await AsyncStorage.getItem(dataKey);
@@ -46,7 +65,13 @@ export function Resume() {
 
     
     const expenses : TransactionProps[] = transactions
-    .filter((expense: TransactionProps) => expense.type === 'negative');
+    .filter((expense: TransactionProps) => 
+      expense.type === 'negative' &&
+      new Date(expense.date).getMonth() === selectedDate.getMonth() &&
+      new Date(expense.date).getFullYear() === selectedDate.getFullYear()
+    );
+
+    console.log(expenses);
     
     const expensesTotal = expenses
     .reduce((accumulator: number, expense: TransactionProps) => {
@@ -89,8 +114,8 @@ export function Resume() {
   }
 
   useEffect(() => {
-    loadTransactions();
-  }, []);
+    loadData();
+  }, [selectedDate]);
 
   return (
     <Container>
@@ -105,6 +130,18 @@ export function Resume() {
           paddingBottom: useBottomTabBarHeight() - 40,
         }}
       >
+        <MonthSelect>
+          <MonthSelectButton onPress={() => handleDateChange('prev')}>
+            <MonthSelectIcon name="chevron-left" />
+          </MonthSelectButton>
+
+          <Month>{ format(selectedDate, 'MMMM, yyyy', { locale: ptBR }) }</Month>
+
+          <MonthSelectButton onPress={() => handleDateChange('next')}>
+            <MonthSelectIcon name="chevron-right" />
+          </MonthSelectButton>
+        </MonthSelect>
+
         <ChartContainer>
           <VictoryPie
             data={totalByCategories}
