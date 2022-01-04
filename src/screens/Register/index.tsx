@@ -15,6 +15,8 @@ import { CategorySelectButton } from '../../components/Form/CategorySelectButton
 
 import { Categories } from '../Categories';
 
+import { useAuth } from '../../hooks/auth';
+
 import { 
   Container,
   Header,
@@ -43,8 +45,10 @@ const schema = yup.object().shape({
 });
 
 export function Register() {
-  const dataKey = '@gofinances:transactions';
-  const navigation = useNavigation<NavigationProps>();
+  const { user } = useAuth();
+
+  const dataKey = `@gofinances:transactions_user:${user.id}`;
+  const navigation = useNavigation<NavigationProps>();  
 
   const [transactionType, setTransactionType] = useState('');
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { VictoryPie } from 'victory-native';
 import { RFValue } from 'react-native-responsive-fontsize';
@@ -8,8 +8,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import { addMonths, subMonths, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-import { categories } from '../../utils/categories';
 import { HistoryCard } from '../../components/HistoryCard';
+
+import { categories } from '../../utils/categories';
+import { useAuth } from '../../hooks/auth';
 
 import {
   Container,
@@ -43,6 +45,7 @@ interface CategoryDataProps {
 }
 
 export function Resume() {
+  const { user } = useAuth();
   const theme = useTheme();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -64,7 +67,7 @@ export function Resume() {
   async function loadData() {
     setIsLoading(true);
 
-    const dataKey = '@gofinances:transactions';
+    const dataKey = `@gofinances:transactions_user:${user.id}`;
 
     const response = await AsyncStorage.getItem(dataKey);
     const transactions = response ? JSON.parse(response) : [];
