@@ -7,11 +7,11 @@ import { AppRoutes } from './app.routes';
 import { useAuth } from '../hooks/auth';
 
 export function Routes() {
-  const { user } = useAuth();
+  const { user, isUserStorageLoading } = useAuth();
 
   return (
     <NavigationContainer>
-      { user.id ? <AppRoutes /> : <AuthRoutes />}
+      { user.id && !isUserStorageLoading ? <AppRoutes /> : <AuthRoutes />}
     </NavigationContainer>
   );
 }

@@ -15,9 +15,6 @@ import {
 
 import { AuthProvider } from './src/hooks/auth';
 
-import { AppRoutes } from './src/routes/app.routes';
-import { SignIn } from './src/screens/SignIn';
-
 import { Routes } from './src/routes';
 
 import theme from './src/global/styles/theme';

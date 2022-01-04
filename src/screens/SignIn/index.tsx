@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { ActivityIndicator, Alert, Platform } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useTheme } from 'styled-components';
 
 import AppleSvg from '../../assets/apple.svg';
 import GoogleSvg from '../../assets/google.svg';
@@ -18,26 +20,33 @@ import {
   Footer,
   FooterWrapper
 } from './styles';
-import { Alert } from 'react-native';
 
 export function SignIn() {
+  const theme = useTheme();
   const { signInWithGoogle, signInWithApple } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   
   async function handleSignInWithGoogle() {
     try {
-      await signInWithGoogle();
+      setIsLoading(true);
+      const res = await signInWithGoogle();
+
+      if(res) setIsLoading(false);
     } catch (error) {
       console.error(error);
       Alert.alert('Não foi possível conectar a conta Google')
+      setIsLoading(false);
     }
   }
 
   async function handleSignInWithApple() {
     try {
-      await signInWithApple();
+      setIsLoading(true);
+      return await signInWithApple();
     } catch (error) {
       console.error(error);
       Alert.alert('Não foi possível conectar a conta Apple')
+      setIsLoading(false);
     }
   }
 
@@ -70,12 +79,25 @@ export function SignIn() {
             svg={GoogleSvg}
             onPress={handleSignInWithGoogle}
           />
-          <SignInSocialButton
-            title="Entrar com Apple"
-            svg={AppleSvg}
-            onPress={handleSignInWithApple}
-          />
+          {
+            Platform.OS === 'ios' && 
+              <SignInSocialButton
+                title="Entrar com Apple"
+                svg={AppleSvg}
+                onPress={handleSignInWithApple}
+              />
+          }
         </FooterWrapper>
+
+        {
+          isLoading && 
+            <ActivityIndicator 
+              color={theme.colors.shape}
+              style={{
+                marginTop: 18,
+              }}
+            />
+        }
       </Footer>
     </Container>
   );
