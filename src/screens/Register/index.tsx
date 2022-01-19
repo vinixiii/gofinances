@@ -47,7 +47,6 @@ const schema = yup.object().shape({
 export function Register() {
   const { user } = useAuth();
 
-  const dataKey = `@gofinances:transactions_user:${user.id}`;
   const navigation = useNavigation<NavigationProps>();  
 
   const [transactionType, setTransactionType] = useState('');
@@ -78,6 +77,8 @@ export function Register() {
   }
 
   async function handleRegister(form: FormData) {
+    const dataKey = `@gofinances:transactions_user:${user.id}`;
+
     if(!transactionType)
       return Alert.alert('Selecione o tipo da transação.');
 
@@ -159,7 +160,7 @@ export function Register() {
               />
             </TransactionTypes>
             
-            <CategorySelectButton title={category.name} onPress={handleOpenCategoryModal} />
+            <CategorySelectButton testID="button-category" title={category.name} onPress={handleOpenCategoryModal} />
           </Fields>
 
           <Button
@@ -168,7 +169,7 @@ export function Register() {
           />
         </Form>
 
-        <Modal visible={isCategoryModalOpen} statusBarTranslucent={true}>
+        <Modal testID="modal-category" visible={isCategoryModalOpen} statusBarTranslucent={true}>
           <Categories
             category={category}
             setCategory={setCategory}
